@@ -180,16 +180,16 @@ if __name__ == "__main__":
     # Джерело: https://vginsights.com/game/s-t-a-l-k-e-r-2-heart-of-chornobyl
     # Джерело: https://x.com/VG_Insights/status/1861015666263752993
     SALES_BY_COUNTRY = [
-        ('US', 0.22, 2490.52),
-        ('Ukraine', 0.16, 1399.00),
-        ('Germany', 0.08, 2634.46),
-        ('China', 0.08, 1536.40),
-        ('World', 0.46, 1399.00 * 1.5),
+        ('US', 0.229, 2490.52),
+        ('Ukraine', 0.146, 1399.00),
+        ('Germany', 0.081, 2634.46),
+        ('China', 0.081, 1536.40),
+        ('World', 0.463, 1399.00 * 1.5),
     ]
 
     # Джерело: https://steamdb.info/app/1643320/charts/
-    REVIEWS_P = 72349
-    REVIEWS_N = 14283
+    REVIEWS_P = 72407
+    REVIEWS_N = 14308
 
     ESTIMATES_BY_TRACKERS = [
         ('PlayTracker', int(0.813 * MILLION)),
