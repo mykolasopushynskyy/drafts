@@ -111,24 +111,29 @@ class SalesSimulator:
 
         return revenue
 
-def calculate_profit(estimates: list[tuple[str, int]], sales: list[tuple[str, float, float]]):
+def calculate_profit(
+        estimates: list[tuple[str, int]],
+        sales: list[tuple[str, float, float]],
+        budget: list[tuple[str, int]]
+):
     """
     Розраховує та виводить прибуток за оцінками кількості користувачів.
 
     Параметри:
     estimates (list[tuple[str, int]]): джерела оцінок та кількість користувачів
     sales (list[tuple[str, float, float]]): дані про продажі (країна, частка, ціна)
+    budget (list[tuple[str, int]]): оцінки б'юджету гри
     """
-    table = Table(title='[bold bright_white]Stalker 2[/] розрахунок прибутку',
+    sim_table = Table(title='[bold bright_white]Stalker 2[/] розрахунок прибутку',
                   caption='* комісія Steam враховано в розрахунок',
                   caption_justify='left',
                   box=box.ROUNDED,
                   )
 
-    table.add_column('[bright_yellow]Джерело[/]', justify='right', style='orange3', no_wrap=True)
-    table.add_column('[bright_yellow]Продані копії[/]', justify='right', style='magenta')
-    table.add_column('[bright_yellow]Продажі[/] [turquoise2](UAH)[/]', justify='center', style='green', width=20)
-    table.add_column('[bright_yellow]Продажі[/] [turquoise2](USD)[/]', justify='center', style='bright_green', width=20)
+    sim_table.add_column('[bright_yellow]Джерело[/]', justify='right', style='orange3')
+    sim_table.add_column('[bright_yellow]Продані копії[/]', justify='right', style='magenta')
+    sim_table.add_column('[bright_yellow]Продажі[/] [turquoise2](UAH)[/]', justify='center', style='green', width=20)
+    sim_table.add_column('[bright_yellow]Продажі[/] [turquoise2](USD)[/]', justify='center', style='bright_green', width=20)
 
     estimates.sort(key=lambda e: e[1])
 
@@ -140,14 +145,14 @@ def calculate_profit(estimates: list[tuple[str, int]], sales: list[tuple[str, fl
         profit_usd = int(revenue_uah / EXCHANGE)
 
         # Вивід результатів
-        table.add_row(
+        sim_table.add_row(
             source,
             f'{units_format(units)}',
             currency_format(profit_uah, sign='₴'),
             currency_format(profit_usd, sign='$')
         )
 
-    table.add_section()
+    sim_table.add_section()
 
     # Статистичні розрахунки
     units_sold = [units for _, units in estimates]
@@ -163,14 +168,27 @@ def calculate_profit(estimates: list[tuple[str, int]], sales: list[tuple[str, fl
         profit_usd = int(revenue_uah / EXCHANGE)
 
         # Вивід результатів
-        table.add_row(
+        sim_table.add_row(
             f'[i bold]{source}[/]',
             f'[i bold]{units_format(units)}[/]',
             f'[i bold]{currency_format(profit_uah, sign="₴")}[/]',
             f'[i bold]{currency_format(profit_usd, sign="$")}[/]'
         )
 
-    console.print(table)
+    console.print(sim_table)
+
+    budget_table = Table(box=box.HORIZONTALS)
+
+    budget_table.add_column('[bold bright_white]Stalker 2[/]', justify='right', style='orange3', width=21)
+    budget_table.add_column('[bright_yellow]Б\'юджет[/]', justify='right', style='bright_green', width=50)
+
+    for source, estimate_usd in budget:
+        budget_table.add_row(
+            f'[i bold]{source}[/]',
+            f'[i bold]{currency_format(estimate_usd, sign="$")}[/]'
+        )
+
+    console.print(budget_table)
 
 if __name__ == "__main__":
     console = Console()
@@ -188,11 +206,11 @@ if __name__ == "__main__":
     ]
 
     # Джерело: https://steamdb.info/app/1643320/charts/
-    REVIEWS_P = 72407
-    REVIEWS_N = 14308
+    REVIEWS_P = 72521
+    REVIEWS_N = 14334
 
     ESTIMATES_BY_TRACKERS = [
-        ('PlayTracker', int(0.813 * MILLION)),
+        ('PlayTracker', int(0.814 * MILLION)),
         ('Gamalytic', int(1.30 * MILLION)),
         ('SteamSpy', int(2.31 * MILLION)),
         ('VG Insights', int(2.65 * MILLION)),
@@ -201,9 +219,15 @@ if __name__ == "__main__":
         ('відгуки x 55', int(55 * (REVIEWS_N + REVIEWS_P))),
     ]
 
-    EXCHANGE = 41.46
+    BUDGET = [
+        ('Мінімальний б\'юджет', 30 * MILLION),
+        ('Середній б\'юджет', 60 * MILLION),
+        ('Максимальний б\'юджет', 100 * MILLION),
+    ]
+
+    EXCHANGE = 41.59
 
     # Розрахунок прибутків для заданих оцінок і продажів
     console.print('[bold bright_white]Stalker 2[/] розрахунок прибутку по інформації з різних джерел')
     console.print(f'* відгуки [blue]{REVIEWS_P + REVIEWS_N}[/] ~ позитивні [green]{REVIEWS_P}[/] + негативні [red]{REVIEWS_N}[/]')
-    calculate_profit(ESTIMATES_BY_TRACKERS, SALES_BY_COUNTRY)
+    calculate_profit(ESTIMATES_BY_TRACKERS, SALES_BY_COUNTRY, BUDGET)
