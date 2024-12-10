@@ -104,7 +104,7 @@ class SalesSimulator:
         """
         revenue = 0.0
 
-        with console.status("[bold orange3]Симуляція продажів ...", spinner='dots2') as status:
+        with console.status("[bold orange3]Симуляція продажів ...", spinner='dots2'):
             for i in range(int(self.total_sales / chunk_size)):
                 for sale in random.choices(self.prices, self.weights, k=chunk_size):
                     revenue += sale * (1 - steam_fee(revenue))
@@ -206,14 +206,14 @@ if __name__ == "__main__":
     ]
 
     # Джерело: https://steamdb.info/app/1643320/charts/
-    REVIEWS_P = 72521
-    REVIEWS_N = 14334
+    REVIEWS_P = 72881
+    REVIEWS_N = 14421
 
     ESTIMATES_BY_TRACKERS = [
-        ('PlayTracker', int(0.814 * MILLION)),
-        ('Gamalytic', int(1.30 * MILLION)),
-        ('SteamSpy', int(2.31 * MILLION)),
-        ('VG Insights', int(2.65 * MILLION)),
+        ('PlayTracker', int(0.821 * MILLION)),
+        ('Gamalytic', int(1.38 * MILLION)),
+        ('SteamSpy', int(2.32 * MILLION)),
+        ('VG Insights', int(2.67 * MILLION)),
         ('відгуки x 20', int(20 * (REVIEWS_N + REVIEWS_P))),
         ('відгуки x 30', int(30 * (REVIEWS_N + REVIEWS_P))),
         ('відгуки x 55', int(55 * (REVIEWS_N + REVIEWS_P))),
