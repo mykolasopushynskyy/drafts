@@ -26,8 +26,8 @@ clean-imports: activate
 	$(AUTOFLAKE) --in-place --remove-all-unused-imports --recursive $(SRC_DIRS)
 
 # Target to generate requirements.txt using pipreqs
-requirements.txt: activate
-	$(PIPREQS) --force .
+requirements: activate
+	$(PIP) install -r requirements.txt
 
 # Target to run both formatting and import cleanup
 lint: format clean-imports

@@ -2,7 +2,7 @@
 
 format = """
 [](color_orange)\
-$os\
+[$os ](bg:color_orange fg:color_fg0)\
 $git_branch\
 $git_status\
 [](fg:color_orange)\
@@ -89,7 +89,7 @@ truncation_symbol = "../"
 [git_branch]
 symbol = ""
 style = "bg:color_orange"
-format = '[[ $symbol $branch ](fg:color_fg0 bg:color_orange)]($style)'
+format = '[[$symbol $branch ](fg:color_fg0 bg:color_orange)]($style)'
 
 [git_status]
 style = "bg:color_orange"
