@@ -247,7 +247,7 @@ def get_exchange_rate(cur_val: str = "USD"):
         cur_val (str): Валюта для отримання курсу
 
     :return: валютний курс гривні до обраної валюти
-    :raises Exception: Помилка при отримання валютного курсу.
+    :raises ValueError: Помилка при отримання валютного курсу.
     """
     url = f'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json&valcode={cur_val}'
     response = requests.get(url)
@@ -279,10 +279,10 @@ if __name__ == '__main__':
     REVIEWS_P, REVIEWS_N = get_steam_reviews(STEAM_APP_ID)
 
     ESTIMATES_BY_TRACKERS = [
-        ('PlayTracker', int(0.823 * MILLION)),
-        ('Gamalytic', int(1.41 * MILLION)),
+        ('PlayTracker', int(0.825 * MILLION)),
+        ('Gamalytic', int(1.40 * MILLION)),
         ('SteamSpy', int(2.38 * MILLION)),
-        ('VG Insights', int(2.7 * MILLION)),
+        ('VG Insights', int(2.72 * MILLION)),
         ('відгуки x 20', int(20 * (REVIEWS_N + REVIEWS_P))),
         ('відгуки x 30', int(30 * (REVIEWS_N + REVIEWS_P))),
         ('відгуки x 55', int(55 * (REVIEWS_N + REVIEWS_P))),
