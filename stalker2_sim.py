@@ -82,7 +82,7 @@ class SalesSimulator:
         self,
         title: str,
         total_sales: int,
-        sales_by_country: list[tuple[str, float, float]],
+        market_share_by_country: list[tuple[str, float, float]],
     ):
         """
         Ініціалізує симуляцію продажів для заданої гри.
@@ -94,10 +94,10 @@ class SalesSimulator:
         """
         self.title = title
         self.total_sales = total_sales
-        self.sales_by_country = sales_by_country
+        self.sales_by_country = market_share_by_country
 
-        self.weights = [share for _, share, _ in sales_by_country]
-        self.prices = [price for _, _, price in sales_by_country]
+        self.weights = [share for _, share, _ in market_share_by_country]
+        self.prices = [price for _, _, price in market_share_by_country]
 
         if sum(self.weights) != 1.0:
             raise ValueError("Сума часток продажів повинна дорівнювати 1")
@@ -280,9 +280,9 @@ if __name__ == '__main__':
 
     ESTIMATES_BY_TRACKERS = [
         ('PlayTracker', int(0.825 * MILLION)),
-        ('Gamalytic', int(1.40 * MILLION)),
-        ('SteamSpy', int(2.38 * MILLION)),
-        ('VG Insights', int(2.72 * MILLION)),
+        ('Gamalytic', int(1.4 * MILLION)),
+        ('SteamSpy', int(2.4 * MILLION)),
+        ('VG Insights', int(2.73 * MILLION)),
         ('відгуки x 20', int(20 * (REVIEWS_N + REVIEWS_P))),
         ('відгуки x 30', int(30 * (REVIEWS_N + REVIEWS_P))),
         ('відгуки x 55', int(55 * (REVIEWS_N + REVIEWS_P))),
