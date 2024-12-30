@@ -110,22 +110,25 @@ class SalesSimulator:
             chunk_size (int): розмір блоку продажів для моделювання
 
         Повертає:
-            float: загальний дохід у гривнях
+            tuple[float, float]: загальний дохід у гривнях та комісія Габену
         """
         revenue = 0.0
+        gaben_revenue = 0.0
 
         with console.status('[bold orange3]Симуляція продажів ...', spinner='dots2'):
             for i in range(int(self.total_sales / chunk_size)):
                 for sale in random.choices(self.prices, self.weights, k=chunk_size):
                     revenue += sale * (1 - steam_fee(revenue))
+                    gaben_revenue += sale * steam_fee(revenue)
 
-        return revenue
+        return revenue, gaben_revenue
 
 
 def calculate_profit(
     estimates: list[tuple[str, int]],
     sales: list[tuple[str, float, float]],
     budget: list[tuple[str, int]],
+    show_gaben: bool = False
 ):
     """
     Розраховує та виводить прибуток за оцінками кількості користувачів.
@@ -158,23 +161,35 @@ def calculate_profit(
         style='bright_green',
         width=20,
     )
+    if show_gaben:
+        sim_table.add_column(
+            "[bright_yellow]Гроші Габена[/] [turquoise2](US)[/]",
+            justify='center',
+            style='bright_green',
+            width=20,
+        )
 
     estimates.sort(key=lambda e: e[1])
 
     for source, units in estimates:
         sales_sim = SalesSimulator(source, units, sales)
-        revenue_uah = sales_sim.simulate_sales()
+        revenue_uah, revenue_gaben = sales_sim.simulate_sales()
 
         profit_uah = int(revenue_uah)
         profit_usd = int(revenue_uah / EXCHANGE)
 
         # Вивід результатів
-        sim_table.add_row(
+        renderables=[
             source,
             f'{units_format(units)}',
             currency_format(profit_uah, sign='₴'),
             currency_format(profit_usd, sign='$'),
-        )
+        ]
+        if show_gaben:
+            renderables.append(
+                currency_format(int(revenue_gaben / EXCHANGE), sign='$')
+            )
+        sim_table.add_row(*renderables)
 
     sim_table.add_section()
 
@@ -186,18 +201,24 @@ def calculate_profit(
         ('Максимум', max(units_sold)),
     ]:
         sales_sim = SalesSimulator(source, units, sales)
-        revenue_uah = sales_sim.simulate_sales()
+        revenue_uah, revenue_gaben  = sales_sim.simulate_sales()
 
-        profit_uah = int(revenue_uah)
+        profit_uah  = int(revenue_uah)
         profit_usd = int(revenue_uah / EXCHANGE)
 
         # Вивід результатів
-        sim_table.add_row(
+        renderables = [
             f'[i bold]{source}[/]',
             f'[i bold]{units_format(units)}[/]',
             f'[i bold]{currency_format(profit_uah, sign="₴")}[/]',
             f'[i bold]{currency_format(profit_usd, sign="$")}[/]',
-        )
+        ]
+        if show_gaben:
+            renderables.append(
+                f'[i bold]{currency_format(int(revenue_gaben / EXCHANGE), sign="$")}[/]',
+            )
+
+        sim_table.add_row(*renderables)
 
     console.print(sim_table)
 
@@ -279,10 +300,10 @@ if __name__ == '__main__':
     REVIEWS_P, REVIEWS_N = get_steam_reviews(STEAM_APP_ID)
 
     ESTIMATES_BY_TRACKERS = [
-        ('PlayTracker', int(0.825 * MILLION)),
-        ('Gamalytic', int(1.4 * MILLION)),
+        ('PlayTracker', int(0.889 * MILLION)),
+        ('Gamalytic', int(1.28 * MILLION)),
         ('SteamSpy', int(2.4 * MILLION)),
-        ('VG Insights', int(2.73 * MILLION)),
+        ('VG Insights', int(2.95 * MILLION)),
         ('відгуки x 20', int(20 * (REVIEWS_N + REVIEWS_P))),
         ('відгуки x 30', int(30 * (REVIEWS_N + REVIEWS_P))),
         ('відгуки x 55', int(55 * (REVIEWS_N + REVIEWS_P))),
@@ -302,6 +323,9 @@ if __name__ == '__main__':
         '[bold bright_white]Stalker 2[/] розрахунок прибутку по інформації з різних джерел'
     )
     console.print(
-        f'* відгуки [blue]{REVIEWS_P + REVIEWS_N}[/] ~ позитивні [green]{REVIEWS_P}[/] + негативні [red]{REVIEWS_N}[/]'
+        f'* відгуки [blue]{REVIEWS_P + REVIEWS_N}[/] ~ '
+        f'позитивні [green]{REVIEWS_P}[/] + '
+        f'негативні [red]{REVIEWS_N}[/] = '
+        f'оцінка [yellow]{REVIEWS_P / (REVIEWS_P + REVIEWS_N) * 100:.2f}[/]'
     )
     calculate_profit(ESTIMATES_BY_TRACKERS, SALES_BY_COUNTRY, BUDGET)
